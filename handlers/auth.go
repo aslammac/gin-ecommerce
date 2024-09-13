@@ -12,7 +12,7 @@ func SendOTP(c *gin.Context) {
 	fmt.Println("Received POST request to /auth/send-otp")
     
     var request struct {
-        Phone string `json:"phone"`
+        Phone string `json:"phone_number"`
     }
     
     if err := c.ShouldBindJSON(&request); err != nil {
@@ -30,13 +30,17 @@ func SendOTP(c *gin.Context) {
 
 func VerifyOTP(c *gin.Context) {
 	var input struct {
-		Phone string `json:"phone"`
-		OTP   string `json:"otp"`
+		Phone string `form:"phone_number" json:"phone_number"`
+		OTP   string `form:"otp_code" json:"otp_code"`
 	}
 
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	// Try to bind query parameters first
+	if err := c.ShouldBindQuery(&input); err != nil {
+		// If query binding fails, try JSON binding
+		if err := c.ShouldBindJSON(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+			return
+		}
 	}
 
 	// Verify OTP (implement this in utils/otp.go)
@@ -55,7 +59,6 @@ func VerifyOTP(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid OTP"})
 	}
-
 }
 
 func Signup(c *gin.Context) {
