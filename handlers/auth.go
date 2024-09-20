@@ -16,9 +16,9 @@ func SendOTP(c *gin.Context) {
     }
     
     if err := c.ShouldBindJSON(&request); err != nil {
-        fmt.Println("Error binding JSON:", err)
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
+		fmt.Println("Error binding JSON:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
     }
     
     fmt.Println("Phone number received:", request.Phone)

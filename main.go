@@ -3,6 +3,7 @@ package main
 import (
 	"gin-ecommerce/handlers"
 	"gin-ecommerce/middleware"
+	"net/http"
 	"os"
 
 	"github.com/gin-contrib/cors"
@@ -30,6 +31,11 @@ func main() {
 	r.POST("/auth/send-otp", handlers.SendOTP)
 	r.POST("/auth/verify-otp", handlers.VerifyOTP)
 	r.POST("/auth/signup", handlers.Signup)
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
+		})
+	})
 
 	// Protected routes
 	protected := r.Group("/api")
@@ -48,5 +54,5 @@ func main() {
 	if port == "" {
 		port = "8080" // Default port if not specified
 	}
-	r.Run(":" + port)
+	r.Run("0.0.0.0:" + port)
 }
